@@ -1,0 +1,115 @@
+name: Deploy CourierX Mail Server
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment to deploy (staging or prod)"
+        required: true
+        default: "prod"
+        type: choice
+        options:
+          - staging
+          - prod
+
+# Required for OIDC authentication with AWS
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          # IMPORTANT: Update this ARN with your actual OIDC role
+          # role-to-assume: arn:aws:iam::YOUR_AWS_ACCOUNT_ID:role/GitHubAction-AssumeRole-CourierX
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: eu-central-1
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ~1.0
+
+      - name: Validate Environment Configuration
+        run: |
+          echo "🚀 Deploying to environment: ${{ github.event.inputs.environment }}"
+          echo "📁 Using configuration file: ${{ github.event.inputs.environment }}.tfvars"
+
+          # Check if the tfvars file exists
+          if [ ! -f "${{ github.event.inputs.environment }}.tfvars" ]; then
+            echo "❌ Error: Configuration file ${{ github.event.inputs.environment }}.tfvars not found!"
+            exit 1
+          else
+            echo "✅ Configuration file found"
+            echo "📋 Configuration contents:"
+            cat "${{ github.event.inputs.environment }}.tfvars"
+          fi
+        working-directory: ./terraform
+
+      - name: Terraform Init
+        run: terraform init
+        working-directory: ./terraform
+
+      - name: Terraform Validate
+        run: terraform validate
+        working-directory: ./terraform
+
+      - name: Terraform Plan
+        run: |
+          terraform plan \
+            -var-file="${{ github.event.inputs.environment }}.tfvars" \
+            -var="domain_name=${{ secrets.DOMAIN_NAME }}" \
+            -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}" \
+            -var="noreply_pass=${{ secrets.NOREPLY_PASS }}" \
+            -var="support_pass=${{ secrets.SUPPORT_PASS }}" \
+            -var="forward_to=${{ secrets.FORWARD_TO }}"
+        working-directory: ./terraform
+
+      - name: Terraform Apply
+        run: |
+          terraform apply -auto-approve \
+            -var-file="${{ github.event.inputs.environment }}.tfvars" \
+            -var="domain_name=${{ secrets.DOMAIN_NAME }}" \
+            -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}" \
+            -var="noreply_pass=${{ secrets.NOREPLY_PASS }}" \
+            -var="support_pass=${{ secrets.SUPPORT_PASS }}" \
+            -var="forward_to=${{ secrets.FORWARD_TO }}"
+        working-directory: ./terraform
+
+      - name: Display Deployment Summary
+        run: terraform output deployment_summary
+        working-directory: ./terraform
+
+      - name: Display DNS Configuration Instructions
+        run: terraform output dns_records_to_create
+        working-directory: ./terraform
+
+      - name: Display Connection Information
+        run: terraform output -json mail_server_connection_info
+        working-directory: ./terraform
+
+      - name: Save Infrastructure State
+        run: |
+          echo "## 🚀 CourierX Deployment Completed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📋 Deployment Details" >> $GITHUB_STEP_SUMMARY
+          echo "- **Environment**: ${{ github.event.inputs.environment }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Domain**: ${{ secrets.DOMAIN_NAME }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Public IP**: $(terraform output -raw mail_server_public_ip)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Instance ID**: $(terraform output -raw mail_server_instance_id)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### ⚠️ Action Required" >> $GITHUB_STEP_SUMMARY
+          echo "1. Configure DNS records in Hostinger (see workflow logs)" >> $GITHUB_STEP_SUMMARY
+          echo "2. Wait 5-10 minutes for server setup to complete" >> $GITHUB_STEP_SUMMARY
+          echo "3. SSH to server to retrieve DKIM key" >> $GITHUB_STEP_SUMMARY
+          echo "4. Test email functionality" >> $GITHUB_STEP_SUMMARY
+        working-directory: ./terraform
