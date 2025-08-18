@@ -19,9 +19,9 @@ variable "aws_profile" {
 # ─────────────────────────────
 
 variable "instance_type" {
-  description = "EC2 instance type (use t2.micro for Free Tier)"
+  description = "EC2 instance type (use t3.small for Free Tier)"
   type        = string
-  default     = "t2.micro"
+  default     = "t3.small"
 }
 
 variable "ssh_public_key" {

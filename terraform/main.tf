@@ -5,7 +5,12 @@ data "aws_ami" "ubuntu" {
 
   filter {
     name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
+    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-24.04-amd64-server-*"]
+  }
+
+  filter {
+    name   = "ami-id"
+    values = ["ami-02003f9f0fde924ea"]
   }
 
   filter {
@@ -92,6 +97,12 @@ resource "aws_instance" "mail_server" {
   ami           = data.aws_ami.ubuntu.id
   instance_type = var.instance_type
   key_name      = aws_key_pair.deployer.key_name
+  ebs_block_device {
+    device_name = "/dev/sda1"
+    volume_size = 30
+    volume_type = "gp3"
+    encrypted = true
+  }
   
   vpc_security_group_ids = [aws_security_group.mail_server_sg.id]
 
