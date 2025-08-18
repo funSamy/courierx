@@ -27,6 +27,7 @@ variable "instance_type" {
 variable "ssh_public_key" {
   description = "SSH public key to install on the EC2 instance for administrative access"
   type        = string
+  sensitive   = true
 }
 
 # ─────────────────────────────
