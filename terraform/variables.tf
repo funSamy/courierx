@@ -5,7 +5,7 @@
 variable "aws_region" {
   description = "AWS region to deploy Courier X"
   type        = string
-  default     = "eu-north-1"
+  default     = "eu-central-1"
 }
 
 variable "aws_profile" {
