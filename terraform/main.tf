@@ -5,12 +5,7 @@ data "aws_ami" "ubuntu" {
 
   filter {
     name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-24.04-amd64-server-*"]
-  }
-
-  filter {
-    name   = "ami-id"
-    values = ["ami-02003f9f0fde924ea"]
+    values = ["ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*"]
   }
 
   filter {
@@ -58,7 +53,7 @@ resource "aws_security_group" "mail_server_sg" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  
+
   # IMAPS
   ingress {
     description = "IMAPS"
@@ -85,7 +80,7 @@ resource "aws_security_group" "mail_server_sg" {
 # Elastic IP for a stable, public-facing address
 resource "aws_eip" "mail_server_ip" {
   domain = "vpc"
-  
+
   tags = merge(
     var.tags,
     { Name = "courierx-mail-server-eip" }
@@ -101,9 +96,9 @@ resource "aws_instance" "mail_server" {
     device_name = "/dev/sda1"
     volume_size = 30
     volume_type = "gp3"
-    encrypted = true
+    encrypted   = true
   }
-  
+
   vpc_security_group_ids = [aws_security_group.mail_server_sg.id]
 
   # Use templatefile to pass variables to the user-data script
