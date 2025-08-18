@@ -31,7 +31,7 @@ jobs:
         with:
           # IMPORTANT: Update this ARN with your actual OIDC role
           # role-to-assume: arn:aws:iam::YOUR_AWS_ACCOUNT_ID:role/GitHubAction-AssumeRole-CourierX
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
           aws-region: eu-central-1
 
       - name: Set up Terraform
@@ -64,25 +64,24 @@ jobs:
         working-directory: ./terraform
 
       - name: Terraform Plan
+        env:
+          TF_VAR_domain_name: ${{ secrets.DOMAIN_NAME }}
+          TF_VAR_ssh_public_key: ${{ secrets.SSH_PUBLIC_KEY }}
+          TF_VAR_noreply_pass: ${{ secrets.NOREPLY_PASS }}
+          TF_VAR_support_pass: ${{ secrets.SUPPORT_PASS }}
+          TF_VAR_forward_to: ${{ secrets.FORWARD_TO }}
         run: |
-          terraform plan \
-            -var-file="${{ github.event.inputs.environment }}.tfvars" \
-            -var="domain_name=${{ secrets.DOMAIN_NAME }}" \
-            -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}" \
-            -var="noreply_pass=${{ secrets.NOREPLY_PASS }}" \
-            -var="support_pass=${{ secrets.SUPPORT_PASS }}" \
-            -var="forward_to=${{ secrets.FORWARD_TO }}"
+          terraform plan -out=plan.tfplan -var-file="${{ github.event.inputs.environment }}.tfvars"
         working-directory: ./terraform
 
       - name: Terraform Apply
-        run: |
-          terraform apply -auto-approve \
-            -var-file="${{ github.event.inputs.environment }}.tfvars" \
-            -var="domain_name=${{ secrets.DOMAIN_NAME }}" \
-            -var="ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}" \
-            -var="noreply_pass=${{ secrets.NOREPLY_PASS }}" \
-            -var="support_pass=${{ secrets.SUPPORT_PASS }}" \
-            -var="forward_to=${{ secrets.FORWARD_TO }}"
+        env:
+          TF_VAR_domain_name: ${{ secrets.DOMAIN_NAME }}
+          TF_VAR_ssh_public_key: ${{ secrets.SSH_PUBLIC_KEY }}
+          TF_VAR_noreply_pass: ${{ secrets.NOREPLY_PASS }}
+          TF_VAR_support_pass: ${{ secrets.SUPPORT_PASS }}
+          TF_VAR_forward_to: ${{ secrets.FORWARD_TO }}
+        run: terraform apply -auto-approve plan.tfplan
         working-directory: ./terraform
 
       - name: Display Deployment Summary
