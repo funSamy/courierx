@@ -10,8 +10,8 @@ tags = {
 }
 
 # Instance configuration for staging
-# Using t2.micro for cost efficiency in staging
-instance_type = "t2.micro"
+# Using t3.small for cost efficiency in staging
+instance_type = "t3.small"
 
 # Optional: You could use a staging subdomain if desired
 # domain_name = "staging.yourdomain.com"

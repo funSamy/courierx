@@ -6,7 +6,7 @@ A self-configuring, production-ready mail server deployed on AWS infrastructure 
 
 CourierX uses a streamlined architecture that prioritizes reliability, security, and cost-effectiveness:
 
-- **AWS EC2 (t2.micro)**: Free Tier eligible instance running Ubuntu 22.04
+- **AWS EC2 (t3.small)**: Free Tier eligible instance running Ubuntu 22.04
 - **Elastic IP**: Static IP address for consistent mail delivery
 - **Cloud-Init**: Self-configuring setup script for complete automation
 - **Security Group**: Minimal port exposure with firewall protection
@@ -175,7 +175,7 @@ courierx/
 
 ### AWS Free Tier Usage
 
-- **EC2 t2.micro**: 750 hours/month (24/7 operation)
+- **EC2 t3.small**: 750 hours/month (24/7 operation)
 - **Elastic IP**: Free when attached
 - **S3**: 5GB storage (sufficient for state)
 - **DynamoDB**: 25GB storage, 25 WCU/RCU

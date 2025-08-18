@@ -67,7 +67,7 @@ tags = {
   ManagedBy   = "Terraform"
   Purpose     = "Mail Server"
 }
-instance_type = "t2.micro"
+instance_type = "t3.small"
 ```
 
 ### Production Environment (`prod.tfvars`)
@@ -80,7 +80,7 @@ tags = {
   Purpose     = "Mail Server"
   Backup      = "Required"
 }
-instance_type = "t2.micro"
+instance_type = "t3.small"
 ```
 
 ## 💡 Key Benefits

@@ -97,7 +97,7 @@ GitHub Actions → Terraform → EC2 Instance + Cloud-Init
 
 ### Free Tier Usage
 
-- **EC2 t2.micro**: 750 hours/month (24/7 coverage)
+- **EC2 t3.small**: 750 hours/month (24/7 coverage)
 - **Elastic IP**: Free when attached to running instance
 - **S3**: 5GB storage (sufficient for Terraform state)
 - **DynamoDB**: 25GB storage, 25 WCU/RCU (overkill for state locking)

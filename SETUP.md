@@ -230,7 +230,7 @@ sudo cat /etc/opendkim/keys/yourdomain.com/mail.txt
 ## Cost Optimization
 
 - **Monitor usage**: Set up AWS billing alerts
-- **Free Tier limits**: 750 hours/month for t2.micro (sufficient for 24/7 operation)
+- **Free Tier limits**: 750 hours/month for t3.small (sufficient for 24/7 operation)
 - **Data transfer**: 100GB/month free (more than enough for personal use)
 - **Storage**: Minimal storage used for configuration
 

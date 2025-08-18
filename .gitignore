@@ -21,6 +21,11 @@ crash.*.log
 # *.tfvars
 # *.tfvars.json
 
+# Exclude test configuration files (contain test credentials)
+test.tfvars
+local.tfvars
+*.test.tfvars
+
 # Ignore override files as they are usually used to override resources locally
 override.tf
 override.tf.json

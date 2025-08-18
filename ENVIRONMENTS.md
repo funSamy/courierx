@@ -19,14 +19,14 @@ terraform/
 ### `staging.tfvars`
 
 - Environment tags for staging identification
-- Same instance type (t2.micro for Free Tier)
+- Same instance type (t3.small for Free Tier)
 - Optional staging subdomain support
 - Development-focused configuration
 
 ### `prod.tfvars`
 
 - Production environment tags
-- Same instance type (t2.micro for cost efficiency)
+- Same instance type (t3.small for cost efficiency)
 - Production-ready configuration
 - Additional backup tags for operational clarity
 
@@ -165,7 +165,7 @@ To enable subdomain approach, uncomment and modify the `domain_name` variable in
 
 ### Free Tier Usage
 
-- Both environments use `t2.micro` instances
+- Both environments use `t3.small` instances
 - Can run one environment at a time within Free Tier
 - Or alternate between environments for testing
 

@@ -11,8 +11,8 @@ tags = {
 }
 
 # Instance configuration for production
-# Using t2.micro to stay within Free Tier
-instance_type = "t2.micro"
+# Using t3.small to stay within Free Tier
+instance_type = "t3.small"
 
 # Production domain (same as staging for now, but allows for separation)
 # domain_name = "yourdomain.com"
